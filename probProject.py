@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 
@@ -78,7 +78,7 @@ def simulate_season(pl_stats, pl_remaining, final_stats):
     return final_stats.index[0]
 
 np.random.seed(0)
-sim_count = 10000
+sim_count = 1000
 winners = []
 
 for _ in range(sim_count):
@@ -102,7 +102,14 @@ print(win_count_data_frame.to_string(index=False))
 print("\n")
 print(win_prob_data_frame.to_string(index=False))
 
-
-sns.barplot(x='Team', y='Win_Probability', data=win_prob_data_frame)
-plt.title("Win Probabilities for Teams")
+sns.set_style("whitegrid")
+sns.set_palette("ch:s=.25,rot=-.25")
+sns.barplot(x='team', y='wins', data=win_count_data_frame, errorbar=None, width=0.7)
+plt.xticks(rotation=45, ha='right', fontsize=10)
+plt.title("Win Simulations for Teams", fontsize=16)
+plt.xlabel("Teams", fontsize=12)
+plt.ylabel("Simulated Win Numbers", fontsize=12)
+plt.grid(True, axis='y', linestyle='--', alpha=0.7)
+plt.tight_layout()
+plt.savefig("wins.png")
 plt.show()
