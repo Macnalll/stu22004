@@ -24,10 +24,7 @@ remaining_matches = pd.DataFrame({
 
 
 def lambda_value(club, pl_stats, home):
-    if(home):
-        return pl_stats.loc[club, 'xGoalsPerGame']
-    else:
-        return pl_stats.loc[club, 'xConcededPerGame']
+    return pl_stats.loc[club, 'xGoalsPerGame']
 
 # Simulate a single match
 def simulate_match(home, away, pl_stats):
