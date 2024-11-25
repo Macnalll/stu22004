@@ -13,6 +13,8 @@ pl_stats['goalChance'] = pl_stats['GF'] / pl_stats['Shots']
 pl_stats['xGoalsPerGame'] = pl_stats['GF'] / (pl_stats['Wins'] + pl_stats['Draws'] + pl_stats['Losses'])
 pl_stats['xConcededPerGame'] = pl_stats['GA'] / (pl_stats['Wins'] + pl_stats['Draws'] + pl_stats['Losses'])
 pl_stats['xShotsPerGame'] = pl_stats['Shots'] / (pl_stats['Wins'] + pl_stats['Draws'] + pl_stats['Losses'])
+pl_stats['xHomeGoalsPerGame'] = pl_stats['homeGoals'] / pl_stats['homeGames']
+pl_stats['xAwayGoalsPerGame'] = pl_stats['awayGoals'] / pl_stats['awayGames']
 
 
 pl_remaining.replace("", np.nan, inplace=True)
@@ -24,7 +26,10 @@ remaining_matches = pd.DataFrame({
 
 
 def lambda_value(club, pl_stats, home):
-    return pl_stats.loc[club, 'xGoalsPerGame']
+    if(home):
+        return pl_stats.loc[club, 'xHomeGoalsPerGame']
+    else:
+        return pl_stats.loc[club, 'xAwayGoalsPerGame']
 
 # Simulate a single match
 def simulate_match(home, away, pl_stats):
