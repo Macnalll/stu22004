@@ -104,8 +104,8 @@ win_prob_data_frame = pd.DataFrame(win_prob).reset_index()
 win_prob_data_frame.columns = ['team','wins']
 
 average_points_data_frame = pd.DataFrame(average_points).reset_index()
-average_points_data_frame.columns = ['team','average points']
-average_points_data_frame.sort_values(by='average points', ascending=False)
+average_points_data_frame.columns = ['team','average_points']
+average_points_data_frame = average_points_data_frame.sort_values(by='average_points', ascending=False)
 
 win_count_data_frame.to_csv('data/winData.csv',index=False)
 win_prob_data_frame.to_csv('data/winProbData.csv',index=False)
