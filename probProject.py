@@ -77,18 +77,25 @@ def simulate_season(pl_stats, pl_remaining, final_stats):
             final_stats.loc[away, 'Draws'] += 1
 
     final_stats = final_stats.sort_values('Points', ascending=False)
-    return final_stats.index[0]
+    return final_stats
+#    return final_stats.index[0]
 
 np.random.seed(0)
 sim_count = 1000
 winners = []
 
 for _ in range(sim_count):
-    sim_final_stats = final_stats.copy()
-    winners.append(simulate_season(pl_stats, pl_remaining, sim_final_stats))
+    sim_final_stats = pl_stats.copy()
+    sim_final_stats = simulate_season(pl_stats, pl_remaining, sim_final_stats)
+    for team in final_stats.index:
+        final_stats.loc[team, 'Points'] += sim_final_stats.loc[team, 'Points']
+    winners.append(sim_final_stats.index[0])
 
 win_count = pd.Series(winners).value_counts()
 win_prob = win_count / sim_count
+
+total_points = final_stats[["Points"]]
+average_points = total_points / sim_count
 
 win_count_data_frame = pd.DataFrame(win_count).reset_index()
 win_count_data_frame.columns = ['team','wins']
@@ -96,13 +103,19 @@ win_count_data_frame.columns = ['team','wins']
 win_prob_data_frame = pd.DataFrame(win_prob).reset_index()
 win_prob_data_frame.columns = ['team','wins']
 
+average_points_data_frame = pd.DataFrame(average_points).reset_index()
+average_points_data_frame.columns = ['team','average points']
+average_points_data_frame.sort_values(by='average points', ascending=False)
+
 win_count_data_frame.to_csv('data/winData.csv',index=False)
 win_prob_data_frame.to_csv('data/winProbData.csv',index=False)
-
+average_points_data_frame.to_csv('data/averagePointsData.csv',index=False)
 
 print(win_count_data_frame.to_string(index=False))
 print("\n")
 print(win_prob_data_frame.to_string(index=False))
+print("\n")
+print(average_points_data_frame.to_string(index=False))
 
 sns.set_style("whitegrid")
 sns.set_palette("ch:s=.25,rot=-.25")
