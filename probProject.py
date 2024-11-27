@@ -12,9 +12,12 @@ pl_remaining = pd.read_csv("PL results after 10th nov (Matchday 11).csv", index_
 pl_stats['goalChance'] = pl_stats['GF'] / pl_stats['Shots']
 pl_stats['xGoalsPerGame'] = pl_stats['GF'] / (pl_stats['Wins'] + pl_stats['Draws'] + pl_stats['Losses'])
 pl_stats['xConcededPerGame'] = pl_stats['GA'] / (pl_stats['Wins'] + pl_stats['Draws'] + pl_stats['Losses'])
-pl_stats['xShotsPerGame'] = pl_stats['Shots'] / (pl_stats['Wins'] + pl_stats['Draws'] + pl_stats['Losses'])
 pl_stats['xHomeGoalsPerGame'] = pl_stats['homeGoals'] / pl_stats['homeGames']
 pl_stats['xAwayGoalsPerGame'] = pl_stats['awayGoals'] / pl_stats['awayGames']
+pl_stats['xHomeConcededPerGame'] = pl_stats['homeConceded'] / pl_stats['homeGames']
+pl_stats['xAwayConcededPerGame'] = pl_stats['awayConceded'] / pl_stats['awayGames']
+average_home_conceded = pl_stats['xHomeConcededPerGame'].mean()
+average_away_conceded = pl_stats['xAwayConcededPerGame'].mean()
 
 
 pl_remaining.replace("", np.nan, inplace=True)
@@ -25,16 +28,16 @@ remaining_matches = pd.DataFrame({
 })
 
 
-def lambda_value(club, pl_stats, home):
+def lambda_value(club, pl_stats, home, opposition):
     if(home):
-        return pl_stats.loc[club, 'xHomeGoalsPerGame']
+        return pl_stats.loc[club, 'xHomeGoalsPerGame'] * (pl_stats.loc[opposition, 'xAwayConcededPerGame'] / average_away_conceded)
     else:
-        return pl_stats.loc[club, 'xAwayGoalsPerGame']
+        return pl_stats.loc[club, 'xAwayGoalsPerGame'] * (pl_stats.loc[opposition, 'xHomeConcededPerGame'] / average_home_conceded)
 
 # Simulate a single match
 def simulate_match(home, away, pl_stats):
-    lambda_home = lambda_value(home, pl_stats, True)
-    lambda_away = lambda_value(away, pl_stats, False)
+    lambda_home = lambda_value(home, pl_stats, True, away)
+    lambda_away = lambda_value(away, pl_stats, False, home)
     home_goals = np.random.poisson(lambda_home)
     away_goals = np.random.poisson(lambda_away)
     
@@ -78,7 +81,6 @@ def simulate_season(pl_stats, pl_remaining, final_stats):
 
     final_stats = final_stats.sort_values('Points', ascending=False)
     return final_stats
-#    return final_stats.index[0]
 
 np.random.seed(0)
 sim_count = 1000
