@@ -81,7 +81,7 @@ def simulate_season(pl_stats, pl_remaining, final_stats):
 #    return final_stats.index[0]
 
 np.random.seed(0)
-sim_count = 1000
+sim_count = 10
 winners = []
 
 for _ in range(sim_count):
